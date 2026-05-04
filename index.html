@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Basketball Laboratory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+<style>
+  /* ─── TOKENS ─────────────────────────────────────────── */
+  :root {
+    --bg:        #080808;
+    --bg2:       #111111;
+    --bg3:       #1a1a1a;
+    --border:    #2a2a2a;
+    --border2:   #3a3a3a;
+    --green:     #AAFF00;
+    --green-dim: #7ACC00;
+    --green-bg:  rgba(170,255,0,0.07);
+    --purple:    #8B5CF6;
+    --purple-dim:#6D28D9;
+    --purple-bg: rgba(139,92,246,0.1);
+    --text:      #F0F0F0;
+    --sub:       #888888;
+    --dim:       #555555;
+    --red:       #FF4D4D;
+    --font-d:    'Barlow Condensed', sans-serif;
+    --font-m:    'IBM Plex Mono', monospace;
+    --radius:    6px;
+    --radius-lg: 10px;
+  }
+
+  /* ─── RESET ──────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-m);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { cursor: pointer; font-family: var(--font-d); }
+  input, select, textarea {
+    font-family: var(--font-m);
+    font-size: 13px;
+    background: var(--bg3);
+    color: var(--text);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--green);
+  }
+  select option { background: var(--bg3); }
+
+  /* ─── NAV ────────────────────────────────────────────── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,8,8,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 60px;
+  }
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .logo-mark svg { width: 18px; height: 18px; }
+  .logo-text {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .logo-text span { color: var(--green); }
+  .nav-links {
+    display: flex;
+    gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: var(--font-m);
+    font-size: 12px;
+    color: var(--sub);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--green); }
+  .btn-nav {
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 8px 20px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-nav:hover { background: var(--green-dim); transform: translateY(-1px); }
+  .btn-nav:active { transform: scale(0.97); }
+
+  /* ─── HERO ───────────────────────────────────────────── */
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding: 80px 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(139,92,246,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(170,255,0,0.05) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--green);
+  }
+  h1 {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: clamp(52px, 8vw, 100px);
+    line-height: 0.92;
+    text-transform: uppercase;
+    letter-spacing: -0.01em;
+    margin-bottom: 24px;
+  }
+  h1 em {
+    font-style: normal;
+    color: var(--purple);
+    -webkit-text-stroke: 0px;
+  }
+  h1 .outline {
+    -webkit-text-stroke: 1.5px var(--green);
+    color: transparent;
+  }
+  .hero-sub {
+    font-family: var(--font-m);
+    font-size: 13px;
+    color: var(--sub);
+    max-width: 480px;
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+  }
+  .stat {
+    display: flex;
+    flex-direction: column;
+  }
+  .stat-num {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 36px;
+    color: var(--green);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dim);
+    margin-top: 4px;
+  }
+
+  /* ─── MAIN LAYOUT ────────────────────────────────────── */
+  .main-wrap {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    min-height: calc(100vh - 60px - 280px);
+  }
+
+  /* ─── SCHEDULER PANEL ────────────────────────────────── */
+  .scheduler-panel {
+    border-right: 1px solid var(--border);
+    padding: 36px 32px;
+    position: sticky;
+    top: 60px;
+    height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .panel-header {
+    margin-bottom: 28px;
+  }
+  .panel-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .panel-title {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+
+  .form-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--sub);
+  }
+  .required { color: var(--green); margin-left: 2px; }
+
+  .btn-submit {
+    width: 100%;
+    background: var(--green);
+    color: #000;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 14px;
+    margin-top: 8px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-submit:hover { background: var(--green-dim); transform: translateY(-1px); }
+  .btn-submit:active { transform: scale(0.98); }
+
+  .form-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+  .form-note {
+    font-size: 11px;
+    color: var(--dim);
+    line-height: 1.6;
+  }
+
+  /* ─── SESSIONS BOARD ─────────────────────────────────── */
+  .sessions-board {
+    padding: 36px 40px;
+  }
+  .board-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+  .board-title {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 28px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+  }
+  .board-count {
+    font-family: var(--font-m);
+    font-size: 12px;
+    color: var(--sub);
+  }
+  .board-count span { color: var(--green); font-weight: 600; }
+
+  .filter-bar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    background: transparent;
+    color: var(--sub);
+    border: 1px solid var(--border2);
+    border-radius: 20px;
+    font-family: var(--font-m);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 5px 14px;
+    transition: all 0.15s;
+  }
+  .filter-btn:hover { border-color: var(--green); color: var(--text); }
+  .filter-btn.active {
+    background: var(--green-bg);
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+
+  /* ─── SESSION CARD ───────────────────────────────────── */
+  .session-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    transition: border-color 0.15s, transform 0.1s;
+    overflow: hidden;
+  }
+  .session-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .session-card.type-skills::before   { background: var(--green); }
+  .session-card.type-scrimmage::before { background: var(--purple); }
+  .session-card.type-film::before      { background: #3B82F6; }
+  .session-card.type-conditioning::before { background: #F59E0B; }
+  .session-card.type-shooting::before  { background: #EC4899; }
+  .session-card.type-open::before      { background: var(--sub); }
+  .session-card:hover {
+    border-color: var(--border2);
+    transform: translateY(-2px);
+  }
+
+  .card-type-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 3px;
+    margin-bottom: 12px;
+  }
+  .type-skills   .card-type-badge { background: var(--green-bg); color: var(--green); }
+  .type-scrimmage .card-type-badge { background: var(--purple-bg); color: var(--purple); }
+  .type-film      .card-type-badge { background: rgba(59,130,246,0.1); color: #60A5FA; }
+  .type-conditioning .card-type-badge { background: rgba(245,158,11,0.1); color: #FCD34D; }
+  .type-shooting  .card-type-badge { background: rgba(236,72,153,0.1); color: #F472B6; }
+  .type-open      .card-type-badge { background: rgba(136,136,136,0.1); color: var(--sub); }
+
+  .card-title {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 22px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin-bottom: 14px;
+  }
+  .card-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+  .meta-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .meta-icon {
+    color: var(--dim);
+    width: 14px;
+    flex-shrink: 0;
+    text-align: center;
+    font-size: 14px;
+  }
+  .meta-value { color: var(--sub); }
+  .meta-value strong { color: var(--text); font-weight: 500; }
+
+  .card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .capacity-bar {
+    flex: 1;
+    margin-right: 16px;
+  }
+  .capacity-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--dim);
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .capacity-track {
+    height: 3px;
+    background: var(--border2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .capacity-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .btn-delete {
+    background: transparent;
+    color: var(--dim);
+    border: none;
+    font-family: var(--font-m);
+    font-size: 18px;
+    padding: 2px 6px;
+    border-radius: var(--radius);
+    transition: color 0.15s, background 0.15s;
+    line-height: 1;
+  }
+  .btn-delete:hover { color: var(--red); background: rgba(255,77,77,0.1); }
+
+  /* ─── EMPTY STATE ────────────────────────────────────── */
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 60px 40px;
+    text-align: center;
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius-lg);
+  }
+  .empty-glyph {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 64px;
+    color: var(--border2);
+    line-height: 1;
+    margin-bottom: 12px;
+    text-transform: uppercase;
+  }
+  .empty-text {
+    font-size: 12px;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ─── TOAST ──────────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    right: 32px;
+    background: var(--bg3);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-lg);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 999;
+    transform: translateY(80px);
+    opacity: 0;
+    transition: transform 0.25s ease, opacity 0.25s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    flex-shrink: 0;
+  }
+
+  /* ─── FOOTER ─────────────────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-logo {
+    font-family: var(--font-d);
+    font-weight: 900;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--dim);
+  }
+  .footer-logo span { color: var(--green); }
+  .footer-copy {
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 0.06em;
+  }
+
+  /* ─── RESPONSIVE ─────────────────────────────────────── */
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 48px 20px 40px; }
+    .hero-stats { gap: 24px; }
+    .main-wrap { grid-template-columns: 1fr; }
+    .scheduler-panel { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 28px 20px; }
+    .sessions-board { padding: 28px 20px; }
+    footer { padding: 20px; flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ──────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <circle cx="9" cy="9" r="8" stroke="#000" stroke-width="1.5"/>
+        <path d="M9 1 Q14 9 9 17" stroke="#000" stroke-width="1.2" fill="none"/>
+        <path d="M9 1 Q4 9 9 17" stroke="#000" stroke-width="1.2" fill="none"/>
+        <path d="M1.5 6.5 H16.5M1.5 11.5 H16.5" stroke="#000" stroke-width="1.2"/>
+      </svg>
+    </div>
+    <div class="logo-text">Basketball <span>Lab</span></div>
+  </div>
+  <ul class="nav-links">
+    <li><a href="#sessions" class="active">Sessions</a></li>
+    <li><a href="#">Roster</a></li>
+    <li><a href="#">Analytics</a></li>
+    <li><a href="#">Settings</a></li>
+  </ul>
+  <button class="btn-nav" onclick="document.getElementById('title-input').focus()">+ New Session</button>
+</nav>
+
+<!-- ─── HERO ──────────────────────────────────────────────── -->
+<section class="hero">
+  <div class="hero-eyebrow">Coach Dashboard</div>
+  <h1>Basketball<br><span class="outline">Laboratory</span></h1>
+  <p class="hero-sub">Schedule and manage training sessions. Track capacity, session types, and your team's development calendar.</p>
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num" id="stat-total">0</div>
+      <div class="stat-label">Sessions Scheduled</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="stat-upcoming">0</div>
+      <div class="stat-label">Upcoming</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="stat-players">0</div>
+      <div class="stat-label">Total Capacity</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MAIN ──────────────────────────────────────────────── -->
+<div class="main-wrap" id="sessions">
+
+  <!-- SCHEDULER FORM -->
+  <aside class="scheduler-panel">
+    <div class="panel-header">
+      <div class="panel-label">// Schedule</div>
+      <div class="panel-title">New Session</div>
+    </div>
+
+    <div class="form-grid" id="session-form">
+      <div class="form-group">
+        <label class="form-label">Session Title <span class="required">*</span></label>
+        <input type="text" id="title-input" placeholder="e.g. Elite Guard Workout" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Type <span class="required">*</span></label>
+          <select id="type-input">
+            <option value="">— Select —</option>
+            <option value="skills">Skills</option>
+            <option value="shooting">Shooting</option>
+            <option value="scrimmage">Scrimmage</option>
+            <option value="conditioning">Conditioning</option>
+            <option value="film">Film</option>
+            <option value="open">Open Gym</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Group</label>
+          <select id="group-input">
+            <option value="All">All</option>
+            <option value="HS Varsity">HS Varsity</option>
+            <option value="HS JV">HS JV</option>
+            <option value="JH">JH</option>
+            <option value="Youth">Youth</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Date <span class="required">*</span></label>
+          <input type="date" id="date-input" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time <span class="required">*</span></label>
+          <input type="time" id="time-input" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Duration</label>
+          <select id="dur-input">
+            <option value="60">60 min</option>
+            <option value="75">75 min</option>
+            <option value="90" selected>90 min</option>
+            <option value="120">120 min</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Max Players</label>
+          <input type="number" id="max-input" placeholder="12" min="1" max="30" value="12" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location</label>
+        <input type="text" id="loc-input" placeholder="e.g. Main Gym, Court 1" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <textarea id="notes-input" rows="2" placeholder="Optional: focus areas, reminders..."></textarea>
+      </div>
+
+      <hr class="form-divider" />
+      <button class="btn-submit" onclick="scheduleSession()">Schedule Session →</button>
+      <p class="form-note">Sessions are saved locally. Backend integration coming soon.</p>
+    </div>
+  </aside>
+
+  <!-- SESSIONS BOARD -->
+  <main class="sessions-board">
+    <div class="board-header">
+      <div>
+        <div class="panel-label">// Schedule Board</div>
+        <div class="board-title">Upcoming Sessions</div>
+      </div>
+      <div class="board-count">Showing <span id="count-display">0</span> sessions</div>
+    </div>
+
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="setFilter('all', this)">All Types</button>
+      <button class="filter-btn" onclick="setFilter('skills', this)">Skills</button>
+      <button class="filter-btn" onclick="setFilter('shooting', this)">Shooting</button>
+      <button class="filter-btn" onclick="setFilter('scrimmage', this)">Scrimmage</button>
+      <button class="filter-btn" onclick="setFilter('conditioning', this)">Conditioning</button>
+      <button class="filter-btn" onclick="setFilter('film', this)">Film</button>
+      <button class="filter-btn" onclick="setFilter('open', this)">Open Gym</button>
+    </div>
+
+    <div class="sessions-grid" id="sessions-grid">
+      <!-- populated by JS -->
+    </div>
+  </main>
+</div>
+
+<!-- ─── FOOTER ────────────────────────────────────────────── -->
+<footer>
+  <div class="footer-logo">Basketball <span>Lab</span></div>
+  <div class="footer-copy">© 2026 Basketball Laboratory · All rights reserved</div>
+</footer>
+
+<!-- ─── TOAST ─────────────────────────────────────────────── -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toast-msg">Session scheduled.</span>
+</div>
+
+<!-- ─── SCRIPTS ───────────────────────────────────────────── -->
+<script>
+  // ─── STATE ──────────────────────────────────────────────
+  let sessions = JSON.parse(localStorage.getItem('bbl_sessions') || '[]');
+  let activeFilter = 'all';
+
+  // ─── INIT ───────────────────────────────────────────────
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('date-input').value = today;
+  document.getElementById('date-input').min = today;
+  renderAll();
+
+  // ─── SCHEDULE ───────────────────────────────────────────
+  function scheduleSession() {
+    const title = document.getElementById('title-input').value.trim();
+    const type  = document.getElementById('type-input').value;
+    const group = document.getElementById('group-input').value;
+    const date  = document.getElementById('date-input').value;
+    const time  = document.getElementById('time-input').value;
+    const dur   = document.getElementById('dur-input').value;
+    const max   = parseInt(document.getElementById('max-input').value) || 12;
+    const loc   = document.getElementById('loc-input').value.trim();
+    const notes = document.getElementById('notes-input').value.trim();
+
+    if (!title) { showToast('Add a session title.'); return; }
+    if (!type)  { showToast('Select a session type.'); return; }
+    if (!date)  { showToast('Pick a date.'); return; }
+    if (!time)  { showToast('Pick a time.'); return; }
+
+    const session = {
+      id: Date.now(),
+      title, type, group, date, time,
+      duration: parseInt(dur),
+      maxPlayers: max,
+      enrolled: 0,
+      location: loc || 'TBD',
+      notes,
+      created: new Date().toISOString()
+    };
+
+    sessions.push(session);
+    sessions.sort((a, b) => (a.date + a.time).localeCompare(b.date + b.time));
+    save();
+    renderAll();
+    resetForm();
+    showToast('Session scheduled successfully!');
+  }
+
+  // ─── DELETE ──────────────────────────────────────────────
+  function deleteSession(id) {
+    sessions = sessions.filter(s => s.id !== id);
+    save();
+    renderAll();
+    showToast('Session removed.');
+  }
+
+  // ─── FILTER ──────────────────────────────────────────────
+  function setFilter(type, btn) {
+    activeFilter = type;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  // ─── RENDER ──────────────────────────────────────────────
+  function renderAll() {
+    renderGrid();
+    renderStats();
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('sessions-grid');
+    const now  = today;
+    let list = sessions.filter(s => s.date >= now);
+    if (activeFilter !== 'all') list = list.filter(s => s.type === activeFilter);
+
+    document.getElementById('count-display').textContent = list.length;
+
+    if (!list.length) {
+      grid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-glyph">No Sessions</div>
+          <div class="empty-text">Schedule your first session using the form →</div>
+        </div>`;
+      return;
+    }
+
+    grid.innerHTML = list.map(s => {
+      const pct = Math.round((s.enrolled / s.maxPlayers) * 100);
+      const dateStr = new Date(s.date + 'T12:00:00').toLocaleDateString('en-US', {
+        weekday: 'short', month: 'short', day: 'numeric'
+      });
+      const timeStr = formatTime(s.time);
+      const typeLabel = {
+        skills: 'Skills', shooting: 'Shooting', scrimmage: 'Scrimmage',
+        conditioning: 'Conditioning', film: 'Film', open: 'Open Gym'
+      }[s.type] || s.type;
+
+      return `
+        <div class="session-card type-${s.type}">
+          <div class="card-type-badge">${typeLabel}</div>
+          <div class="card-title">${escHtml(s.title)}</div>
+          <div class="card-meta">
+            <div class="meta-row">
+              <span class="meta-icon">📅</span>
+              <span class="meta-value"><strong>${dateStr}</strong> at ${timeStr}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-icon">⏱</span>
+              <span class="meta-value">${s.duration} min · ${escHtml(s.group)}</span>
+            </div>
+            <div class="meta-row">
+              <span class="meta-icon">📍</span>
+              <span class="meta-value">${escHtml(s.location)}</span>
+            </div>
+            ${s.notes ? `<div class="meta-row">
+              <span class="meta-icon">📝</span>
+              <span class="meta-value">${escHtml(s.notes)}</span>
+            </div>` : ''}
+          </div>
+          <div class="card-footer">
+            <div class="capacity-bar">
+              <div class="capacity-label">
+                <span>Capacity</span>
+                <span>${s.enrolled} / ${s.maxPlayers}</span>
+              </div>
+              <div class="capacity-track">
+                <div class="capacity-fill" style="width:${pct}%"></div>
+              </div>
+            </div>
+            <button class="btn-delete" onclick="deleteSession(${s.id})" title="Delete session">✕</button>
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function renderStats() {
+    const now = today;
+    const upcoming = sessions.filter(s => s.date >= now);
+    document.getElementById('stat-total').textContent = sessions.length;
+    document.getElementById('stat-upcoming').textContent = upcoming.length;
+    document.getElementById('stat-players').textContent = upcoming.reduce((a, s) => a + s.maxPlayers, 0);
+  }
+
+  // ─── UTILS ───────────────────────────────────────────────
+  function save() {
+    localStorage.setItem('bbl_sessions', JSON.stringify(sessions));
+  }
+
+  function resetForm() {
+    document.getElementById('title-input').value  = '';
+    document.getElementById('type-input').value   = '';
+    document.getElementById('time-input').value   = '';
+    document.getElementById('loc-input').value    = '';
+    document.getElementById('notes-input').value  = '';
+    document.getElementById('max-input').value    = '12';
+    document.getElementById('date-input').value   = today;
+  }
+
+  function formatTime(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    const hour = h % 12 || 12;
+    return `${hour}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+
+  function escHtml(str) {
+    const d = document.createElement('div');
+    d.textContent = str;
+    return d.innerHTML;
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+</script>
+</body>
+</html>
